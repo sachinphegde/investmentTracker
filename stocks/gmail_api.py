@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 
 """
-pdf_parser.py
+gmail_api.py
 ---------
 
 Parses the pdf file and extracts the table from the mentioned page based on search criteria
 
 Functions:
 - authenticate: Google api authentication
-- extract_table_from_pdf: Brief description of what the function does.
-
 """
 
 import os.path
-
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow

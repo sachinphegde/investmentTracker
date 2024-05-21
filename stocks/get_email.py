@@ -13,6 +13,7 @@ Functions:
 """
 
 import base64
+import pdfplumber
 
 def search_email(service, sender=None, subject=None):
     """
@@ -89,6 +90,47 @@ def download_attachments(service, msg):
                     with open(path, 'wb') as f:
                         f.write(file_data)
                     print(f'Attachment {part["filename"]} downloaded.')
+                    return part["filename"]
 
     except Exception as error:
         print(f'An error occurred while downloading attachments: {error}')
+
+
+def extract_table_from_pdf(pdf_path, password, page_number, table_index=None, search_text=None):
+    """
+    Brief description of the function's purpose.
+
+    Parameters:
+    param1 (type): Description of the first parameter.
+    param2 (type): Description of the second parameter.
+
+    Returns:
+    type: Description of the return value.
+    """
+    with pdfplumber.open(pdf_path, password=password) as pdf:
+        page = pdf.pages[page_number - 1]  # pages are 0-indexed
+        tables = page.extract_tables()
+
+        if not tables:
+            raise ValueError(f"No tables found on page {page_number}.")
+
+        # If table_index is provided, return that table
+        if table_index is not None:
+            if table_index < len(tables):
+                return tables[table_index]
+            else:
+                raise ValueError(f"Table index {table_index} is out of range."
+                                 + f"Found {len(tables)} tables.")
+
+        # If search_text is provided, find the table containing the text
+        if search_text is not None:
+            for table in tables:
+                for row in table:
+                    if any(search_text in cell for cell in row):
+                        return table
+
+            raise ValueError(f"No table containing text '{search_text}'"
+                             + f"found on page {page_number}.")
+
+        # If neither table_index nor search_text is provided, return the first table
+        return tables[0]
