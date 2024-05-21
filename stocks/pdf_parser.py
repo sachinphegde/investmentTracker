@@ -9,13 +9,11 @@ Parses the pdf file and extracts the table from the mentioned page based on sear
 Functions:
 - extract_table_from_pdf: Brief description of what the function does.
 
-Usage example:
-    result = function_name(args)
-    print(result)
 """
 
 import pdfplumber
 import pandas as pd
+from graph_generation import graph_generation
 
 def extract_table_from_pdf(pdf_path, password, page_number, table_index=None, search_text=None):
     """
@@ -40,7 +38,8 @@ def extract_table_from_pdf(pdf_path, password, page_number, table_index=None, se
             if table_index < len(tables):
                 return tables[table_index]
             else:
-                raise ValueError(f"Table index {table_index} is out of range. Found {len(tables)} tables.")
+                raise ValueError(f"Table index {table_index} is out of range."
+                                 + f"Found {len(tables)} tables.")
 
         # If search_text is provided, find the table containing the text
         if search_text is not None:
@@ -49,7 +48,8 @@ def extract_table_from_pdf(pdf_path, password, page_number, table_index=None, se
                     if any(search_text in cell for cell in row):
                         return table
 
-            raise ValueError(f"No table containing text '{search_text}' found on page {page_number}.")
+            raise ValueError(f"No table containing text '{search_text}'"
+                             + f"found on page {page_number}.")
 
         # If neither table_index nor search_text is provided, return the first table
         return tables[0]
@@ -66,4 +66,4 @@ def pdf_parser():
 
     # Convert to pandas DataFrame
     df = pd.DataFrame(table[1:], columns=table[0])  # Assuming the first row is the header
-    print(df)
+    graph_generation(df)
